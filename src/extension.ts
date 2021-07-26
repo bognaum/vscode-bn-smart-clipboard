@@ -26,6 +26,28 @@ export function activate(context: vsc.ExtensionContext) {
 				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
 			}
 		}),
+		vsc.commands.registerCommand("bn-smart-clipboard.pasteWithIndent", async () => {
+			vsc.window.showInformationMessage("bn-smart-clipboard.pasteWithIndent");
+			const tEditor = vsc.window.activeTextEditor;
+			if (tEditor) {
+				const 
+					text = await addToHistory(),
+					sels = tEditor.selections,
+					lines = text.split("\n");
+				let newText: string = "";
+				if (lines.length === sels.length) {
+					for (let [k, sel]of sels.entries()) {
+						const indent = getFirstLIndent(tEditor, sel.start);
+						newText += lines.join("\n" + indent);
+					}
+				} else {
+					const indent = getFirstLIndent(tEditor, tEditor.selection.start);
+					newText = lines.join("\n" + indent);
+				}
+				await vsc.env.clipboard.writeText(newText || text);
+				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
+			}
+		}),
 	]);
 }
 
@@ -47,4 +69,31 @@ async function addToHistory() {
 	const hLen = history.length;
 	if (maxHistoryLength < hLen)
 		history.splice(maxHistoryLength, Infinity);
+	return text;
+}
+
+function getFirstLIndent(tEditor: vsc.TextEditor, pos: vsc.Position) {
+	const 
+		doc  = tEditor.document,
+		lineText = doc.getText(doc.lineAt(pos).range),
+		m = lineText.match(/^\s*/),
+		indent = m ? m[0] : "";
+	return indent;
+}
+
+function getIndents(tEditor: vsc.TextEditor) {
+	const 
+		doc  = tEditor.document,
+		sels = tEditor.selections,
+		indents = [];
+	
+	for (let sel of sels) {
+		const 
+			lineText = doc.getText(doc.lineAt(sel.start.line).range),
+			m = lineText.match(/^\s*/),
+			indent = m ? m[0] : "";	
+		indents.push(indent);
+	}
+
+	return indents;
 }
