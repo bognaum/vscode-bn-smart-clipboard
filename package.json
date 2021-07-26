@@ -13,6 +13,7 @@
         "onCommand:bn-smart-clipboard.cut",
         "onCommand:bn-smart-clipboard.copy",
         "onCommand:bn-smart-clipboard.paste",
+        "onCommand:bn-smart-clipboard.pasteWithIndent",
         "onCommand:bn-smart-clipboard.openHistory"
 	],
 	"main": "./out/extension.js",
@@ -29,6 +30,10 @@
 			{
 				"command": "bn-smart-clipboard.paste",
 				"title": "bn-smart-clipboard.paste"
+			},
+			{
+				"command": "bn-smart-clipboard.pasteWithIndent",
+				"title": "bn-smart-clipboard.pasteWithIndent"
 			},
 			{
 				"command": "bn-smart-clipboard.openHistory",
@@ -49,6 +54,11 @@
 			{
 				"key": "ctrl+v",
 				"command": "bn-smart-clipboard.paste",
+				"when": "editorFocus"
+			},
+			{
+				"key": "ctrl+shift+v",
+				"command": "bn-smart-clipboard.pasteWithIndent",
 				"when": "editorFocus"
 			},
 			{
