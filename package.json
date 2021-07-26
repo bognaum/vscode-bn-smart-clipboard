@@ -20,37 +20,41 @@
 		"commands": [
 			{
 				"command": "bn-smart-clipboard.cut",
-				"title": "Hello World"
+				"title": "bn-smart-clipboard.cut"
 			},
 			{
 				"command": "bn-smart-clipboard.copy",
-				"title": "Hello World"
+				"title": "bn-smart-clipboard.copy"
 			},
 			{
 				"command": "bn-smart-clipboard.paste",
-				"title": "Hello World"
+				"title": "bn-smart-clipboard.paste"
 			},
 			{
 				"command": "bn-smart-clipboard.openHistory",
-				"title": "Hello World"
+				"title": "bn-smart-clipboard.openHistory"
 			}
 		],
 		"keybindings": [
 			{
-				"key": "ctrl+alt+x",
-				"command": "bn-smart-clipboard.cut"
+				"key": "ctrl+x",
+				"command": "bn-smart-clipboard.cut",
+				"when": "editorFocus"
 			},
 			{
-				"key": "ctrl+alt+c",
-				"command": "bn-smart-clipboard.copy"
+				"key": "ctrl+c",
+				"command": "bn-smart-clipboard.copy",
+				"when": "editorFocus"
+			},
+			{
+				"key": "ctrl+v",
+				"command": "bn-smart-clipboard.paste",
+				"when": "editorFocus"
 			},
 			{
 				"key": "ctrl+alt+v",
-				"command": "bn-smart-clipboard.paste"
-			},
-			{
-				"key": "ctrl+alt+v ctrl+alt+v",
-				"command": "bn-smart-clipboard.openHistory"
+				"command": "bn-smart-clipboard.openHistory",
+				"when": "editorFocus"
 			}
 		]
 	},
