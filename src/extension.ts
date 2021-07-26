@@ -2,31 +2,29 @@ import * as vsc from 'vscode';
 
 export function activate(context: vsc.ExtensionContext) {
 	context.subscriptions.push(... [
-		vsc.commands.registerCommand("bn-smart-clipboard.cut", () => {
+		vsc.commands.registerCommand("bn-smart-clipboard.cut", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.cut");
-			addToHistory();
-			vsc.commands.executeCommand("editor.action.clipboardCutAction");
+			await vsc.commands.executeCommand("editor.action.clipboardCutAction");
+			await addToHistory();
 		}),
-		vsc.commands.registerCommand("bn-smart-clipboard.copy", () => {
+		vsc.commands.registerCommand("bn-smart-clipboard.copy", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.copy");
-			addToHistory();
-			vsc.commands.executeCommand("editor.action.clipboardCopyAction");
+			await vsc.commands.executeCommand("editor.action.clipboardCopyAction");
+			await addToHistory();
 		}),
-		vsc.commands.registerCommand("bn-smart-clipboard.paste", () => {
+		vsc.commands.registerCommand("bn-smart-clipboard.paste", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.paste");
-			addToHistory();
-			vsc.commands.executeCommand("editor.action.clipboardPasteAction");
+			await addToHistory();
+			await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
 		}),
-		vsc.commands.registerCommand("bn-smart-clipboard.openHistory", () => {
+		vsc.commands.registerCommand("bn-smart-clipboard.openHistory", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.openHistory");
-			vsc.window.showQuickPick(history)
-			.then((itemContent) => {
-				if (itemContent)
-					vsc.env.clipboard.writeText(itemContent)
-						.then(() => {
-							vsc.commands.executeCommand("editor.action.clipboardPasteAction");
-						});
-			});
+			const itemContent = await vsc.window.showQuickPick(history)
+			if (itemContent) {
+				await vsc.env.clipboard.writeText(itemContent);
+				await addToHistory();
+				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
+			}
 		}),
 	]);
 }
@@ -36,20 +34,19 @@ export function deactivate() {}
 const history: string[] = [];
 
 
-function addToHistory() {
-	vsc.env.clipboard.readText()
-		.then((text) => {
-			const 
-				historyLength = 5,
-				index = history.indexOf(text);
-			if (-1 < index) 
-				history.splice(index, 1);
-			history.unshift(text);
+async function addToHistory() {
+	const 
+		text = await vsc.env.clipboard.readText(),
+		maxHistoryLength = 50,
+		index = history.indexOf(text);
 
-			const hLen = history.length;
-			if (historyLength < hLen)
-				history.splice(historyLength, Infinity);
-		});
+	if (-1 < index) 
+		history.splice(index, 1);
+	history.unshift(text);
+
+	const hLen = history.length;
+	if (maxHistoryLength < hLen)
+		history.splice(maxHistoryLength, Infinity);
 }
 
 function sortSelections (sels: vsc.Selection[]) {
