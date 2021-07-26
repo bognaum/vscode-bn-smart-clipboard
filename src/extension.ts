@@ -48,14 +48,3 @@ async function addToHistory() {
 	if (maxHistoryLength < hLen)
 		history.splice(maxHistoryLength, Infinity);
 }
-
-function sortSelections (sels: vsc.Selection[]) {
-	sels.sort((a: vsc.Selection, b: vsc.Selection) => {
-		if (a.active.line == b.active.line)
-			return a.active.character - b.active.character;
-		else
-			return a.active.line - b.active.line;
-	});
-	return sels;
-}
-
