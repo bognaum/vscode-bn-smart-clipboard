@@ -46,7 +46,7 @@ export function activate(context: vsc.ExtensionContext) {
 				const itemContent = await vsc.window.showQuickPick(history)
 				if (itemContent) {
 					const hiftedText = reindentText(itemContent, tEditor);
-					await addToHistory();
+					liftUpInHistory(itemContent);
 					await vsc.env.clipboard.writeText(hiftedText);
 					await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
 				}
@@ -59,13 +59,19 @@ export function activate(context: vsc.ExtensionContext) {
 
 export function deactivate() {}
 
-const history: string[] = [];
+const 
+	opts = {
+		maxHistOptName: "bn-smart-clipboard.maxHistoryLength",
+		defaultMaxHist: 50.
+	},
+	history: string[] = [];
 
 
 async function addToHistory() {
 	const 
 		text = await vsc.env.clipboard.readText(),
-		maxHistoryLength = 50,
+		wbConf = vsc.workspace.getConfiguration(),
+		maxHistoryLength = parseInt(wbConf.get(opts.maxHistOptName) || "0") || opts.defaultMaxHist,
 		index = history.indexOf(text);
 
 	if (-1 < index) 
@@ -76,6 +82,14 @@ async function addToHistory() {
 	if (maxHistoryLength < hLen)
 		history.splice(maxHistoryLength, Infinity);
 	return text;
+}
+
+function liftUpInHistory(text: string) {
+	const index = history.indexOf(text);
+	if (-1 < index) {
+		history.splice(index, 1);
+		history.unshift(text);
+	}
 }
 
 function reindentText(text: string, tEditor: vsc.TextEditor) {
