@@ -19,7 +19,7 @@ export function activate(context: vsc.ExtensionContext) {
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.openHistory", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.openHistory");
-			const itemContent = await vsc.window.showQuickPick(history)
+			const itemContent = await vsc.window.showQuickPick(history);
 			if (itemContent) {
 				await vsc.env.clipboard.writeText(itemContent);
 				await addToHistory();
@@ -31,12 +31,27 @@ export function activate(context: vsc.ExtensionContext) {
 			const tEditor = vsc.window.activeTextEditor;
 			if (tEditor) {
 				const 
-					text        = await addToHistory(),
-					shiftedText = reindentText(text, tEditor);
+				text        = await addToHistory(),
+				shiftedText = reindentText(text, tEditor);
 				await vsc.env.clipboard.writeText(shiftedText);
 				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
 			} else {
 				vsc.window.showWarningMessage("bn-smart-clipboard.pasteWithIndent: \n can't get 'tEditor'.");
+			}
+		}),
+		vsc.commands.registerCommand("bn-smart-clipboard.fromHistoryWithIndent", async () => {
+			vsc.window.showInformationMessage("bn-smart-clipboard.fromHistoryWithIndent");
+			const tEditor = vsc.window.activeTextEditor;
+			if (tEditor) {
+				const itemContent = await vsc.window.showQuickPick(history)
+				if (itemContent) {
+					const hiftedText = reindentText(itemContent, tEditor);
+					await addToHistory();
+					await vsc.env.clipboard.writeText(hiftedText);
+					await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
+				}
+			} else {
+				vsc.window.showWarningMessage("bn-smart-clipboard.fromHistoryWithIndent: \n can't get 'tEditor'.");
 			}
 		}),
 	]);
