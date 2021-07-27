@@ -35,28 +35,18 @@ export function activate(context: vsc.ExtensionContext) {
 					sels = tEditor.selections,
 					EOL  = [0, "\n", "\r\n"][tEditor.document.eol],
 					lines = text.split("\n"),
-					indents = lines.map((v) => {
-						const m = v.match(/^\s*/);
-						return m ? m[0] : "";
-					}),
-					minIndLen = indents.length < 2 ? 0
-						: indents.slice(1).reduce((a,v) => a < v.length ? a : v.length, Infinity);
+					minIndentLen = getMinIndentLength(lines),
+					trimmedLines = lines.map((v,i) => i ? v.slice(minIndentLen) : v);
 
-				lines.forEach((v,i,a) => {
-					console.log(`v`, v);
-					if (i) 
-						a[i] = v.slice(minIndLen);
-					console.log(`a[i]`, a[i]);
-				});
 				let newText: string = "";
 				if (lines.length === sels.length) {
 					for (let [k, sel]of sels.entries()) {
 						const indent = getFirstLIndent(tEditor, sel.start);
-						newText += lines.join("\n" + indent);
+						newText += trimmedLines.join("\n" + indent);
 					}
 				} else {
 					const indent = getFirstLIndent(tEditor, tEditor.selection.start);
-					newText = lines.join("\n" + indent);
+					newText = trimmedLines.join("\n" + indent);
 				}
 				await vsc.env.clipboard.writeText(newText || text);
 				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
@@ -95,19 +85,13 @@ function getFirstLIndent(tEditor: vsc.TextEditor, pos: vsc.Position) {
 	return indent;
 }
 
-function getIndents(tEditor: vsc.TextEditor) {
-	const 
-		doc  = tEditor.document,
-		sels = tEditor.selections,
-		indents = [];
-	
-	for (let [k, sel] of sels.entries()) {
-		const 
-			lineText = doc.getText(doc.lineAt(sel.start.line).range),
-			m = lineText.match(/^\s*/),
-			indent = m ? m[0] : "";	
-		indents.push(indent);
-	}
-
-	return indents;
+function getMinIndentLength(lines: string[]) {
+	const
+		indents = lines.map((v) => {
+			const m = v.match(/^\s*/);
+			return m ? m[0] : "";
+		}),
+		minIndentLen = indents.length < 2 ? 0
+			: indents.slice(1).reduce((a,v) => a < v.length ? a : v.length, Infinity);
+	return minIndentLen
 }
