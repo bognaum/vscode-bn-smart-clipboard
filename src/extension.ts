@@ -19,6 +19,7 @@ export function activate(context: vsc.ExtensionContext) {
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.openHistory", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.openHistory");
+			showHistoryStateMsg();
 			const itemContent = await vsc.window.showQuickPick(history);
 			if (itemContent) {
 				await vsc.env.clipboard.writeText(itemContent);
@@ -41,6 +42,7 @@ export function activate(context: vsc.ExtensionContext) {
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.fromHistoryWithIndent", async () => {
 			vsc.window.showInformationMessage("bn-smart-clipboard.fromHistoryWithIndent");
+			showHistoryStateMsg();
 			const tEditor = vsc.window.activeTextEditor;
 			if (tEditor) {
 				const itemContent = await vsc.window.showQuickPick(history)
@@ -109,6 +111,15 @@ function reindentText(text: string, tEditor: vsc.TextEditor) {
 		newText = trimmedLines.join("\n" + indent);
 	}
 	return newText;
+}
+
+function showHistoryStateMsg() {
+	const
+		wbConf = vsc.workspace.getConfiguration(), 
+		maxHistoryLength = wbConf.get(opts.maxHistOptName) || opts.defaultMaxHist,
+		count = history.length;
+	vsc.window.showInformationMessage(`${count.toString()}  of  ${maxHistoryLength}  max possible copied texts.`);
+	console.log("OK");
 }
 
 function getFirstLIndent(tEditor: vsc.TextEditor, pos: vsc.Position) {
