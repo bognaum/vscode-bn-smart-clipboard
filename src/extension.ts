@@ -33,7 +33,21 @@ export function activate(context: vsc.ExtensionContext) {
 				const 
 					text = await addToHistory(),
 					sels = tEditor.selections,
-					lines = text.split("\n");
+					EOL  = [0, "\n", "\r\n"][tEditor.document.eol],
+					lines = text.split("\n"),
+					indents = lines.map((v) => {
+						const m = v.match(/^\s*/);
+						return m ? m[0] : "";
+					}),
+					minIndLen = indents.length < 2 ? 0
+						: indents.slice(1).reduce((a,v) => a < v.length ? a : v.length, Infinity);
+
+				lines.forEach((v,i,a) => {
+					console.log(`v`, v);
+					if (i) 
+						a[i] = v.slice(minIndLen);
+					console.log(`a[i]`, a[i]);
+				});
 				let newText: string = "";
 				if (lines.length === sels.length) {
 					for (let [k, sel]of sels.entries()) {
@@ -87,7 +101,7 @@ function getIndents(tEditor: vsc.TextEditor) {
 		sels = tEditor.selections,
 		indents = [];
 	
-	for (let sel of sels) {
+	for (let [k, sel] of sels.entries()) {
 		const 
 			lineText = doc.getText(doc.lineAt(sel.start.line).range),
 			m = lineText.match(/^\s*/),
