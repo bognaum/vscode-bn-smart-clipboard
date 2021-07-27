@@ -31,23 +31,12 @@ export function activate(context: vsc.ExtensionContext) {
 			const tEditor = vsc.window.activeTextEditor;
 			if (tEditor) {
 				const 
-					text = await addToHistory(),
-					sels = tEditor.selections,
-					EOL  = [0, "\n", "\r\n"][tEditor.document.eol],
-					lines = text.split("\n");
-
-				let newText: string = "";
-				if (lines.length === sels.length) {
-					newText = lines.map((v) => v.trimLeft()).join("\n");
-				} else {
-					const 
-						minIndentLen = getMinIndentLength(lines),
-						trimmedLines = lines.map((v,i) => i ? v.slice(minIndentLen) : v),
-						indent = getFirstLIndent(tEditor, tEditor.selection.start);
-					newText = trimmedLines.join("\n" + indent);
-				}
-				await vsc.env.clipboard.writeText(newText || text);
+					text        = await addToHistory(),
+					shiftedText = reindentText(text, tEditor);
+				await vsc.env.clipboard.writeText(shiftedText);
 				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
+			} else {
+				vsc.window.showWarningMessage("bn-smart-clipboard.pasteWithIndent: \n can't get 'tEditor'.");
 			}
 		}),
 	]);
@@ -72,6 +61,25 @@ async function addToHistory() {
 	if (maxHistoryLength < hLen)
 		history.splice(maxHistoryLength, Infinity);
 	return text;
+}
+
+function reindentText(text: string, tEditor: vsc.TextEditor) {
+	const 
+		sels = tEditor.selections,
+		EOL  = [0, "\n", "\r\n"][tEditor.document.eol],
+		lines = text.split("\n");
+
+	let newText: string = "";
+	if (lines.length === sels.length) {
+		newText = lines.map((v) => v.trimLeft()).join("\n");
+	} else {
+		const 
+			minIndentLen = getMinIndentLength(lines),
+			trimmedLines = lines.map((v,i) => i ? v.slice(minIndentLen) : v),
+			indent = getFirstLIndent(tEditor, tEditor.selection.start);
+		newText = trimmedLines.join("\n" + indent);
+	}
+	return newText;
 }
 
 function getFirstLIndent(tEditor: vsc.TextEditor, pos: vsc.Position) {
