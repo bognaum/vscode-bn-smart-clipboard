@@ -3,22 +3,22 @@ import * as vsc from 'vscode';
 export function activate(context: vsc.ExtensionContext) {
 	context.subscriptions.push(... [
 		vsc.commands.registerCommand("bn-smart-clipboard.cut", async () => {
-			vsc.window.showInformationMessage("bn-smart-clipboard.cut");
+			// vsc.window.showInformationMessage("bn-smart-clipboard.cut");
 			await vsc.commands.executeCommand("editor.action.clipboardCutAction");
 			await addToHistory();
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.copy", async () => {
-			vsc.window.showInformationMessage("bn-smart-clipboard.copy");
+			// vsc.window.showInformationMessage("bn-smart-clipboard.copy");
 			await vsc.commands.executeCommand("editor.action.clipboardCopyAction");
 			await addToHistory();
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.paste", async () => {
-			vsc.window.showInformationMessage("bn-smart-clipboard.paste");
+			// vsc.window.showInformationMessage("bn-smart-clipboard.paste");
 			await addToHistory();
 			await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.openHistory", async () => {
-			vsc.window.showInformationMessage("bn-smart-clipboard.openHistory");
+			// vsc.window.showInformationMessage("bn-smart-clipboard.openHistory");
 			showHistoryStateMsg();
 			const itemContent = await vsc.window.showQuickPick(history);
 			if (itemContent) {
@@ -28,7 +28,7 @@ export function activate(context: vsc.ExtensionContext) {
 			}
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.pasteWithIndent", async () => {
-			vsc.window.showInformationMessage("bn-smart-clipboard.pasteWithIndent");
+			// vsc.window.showInformationMessage("bn-smart-clipboard.pasteWithIndent");
 			const tEditor = vsc.window.activeTextEditor;
 			if (tEditor) {
 				const 
@@ -41,7 +41,7 @@ export function activate(context: vsc.ExtensionContext) {
 			}
 		}),
 		vsc.commands.registerCommand("bn-smart-clipboard.fromHistoryWithIndent", async () => {
-			vsc.window.showInformationMessage("bn-smart-clipboard.fromHistoryWithIndent");
+			// vsc.window.showInformationMessage("bn-smart-clipboard.fromHistoryWithIndent");
 			showHistoryStateMsg();
 			const tEditor = vsc.window.activeTextEditor;
 			if (tEditor) {
