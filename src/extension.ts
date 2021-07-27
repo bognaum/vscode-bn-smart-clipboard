@@ -34,18 +34,16 @@ export function activate(context: vsc.ExtensionContext) {
 					text = await addToHistory(),
 					sels = tEditor.selections,
 					EOL  = [0, "\n", "\r\n"][tEditor.document.eol],
-					lines = text.split("\n"),
-					minIndentLen = getMinIndentLength(lines),
-					trimmedLines = lines.map((v,i) => i ? v.slice(minIndentLen) : v);
+					lines = text.split("\n");
 
 				let newText: string = "";
 				if (lines.length === sels.length) {
-					for (let [k, sel]of sels.entries()) {
-						const indent = getFirstLIndent(tEditor, sel.start);
-						newText += trimmedLines.join("\n" + indent);
-					}
+					newText = lines.map((v) => v.trimLeft()).join("\n");
 				} else {
-					const indent = getFirstLIndent(tEditor, tEditor.selection.start);
+					const 
+						minIndentLen = getMinIndentLength(lines),
+						trimmedLines = lines.map((v,i) => i ? v.slice(minIndentLen) : v),
+						indent = getFirstLIndent(tEditor, tEditor.selection.start);
 					newText = trimmedLines.join("\n" + indent);
 				}
 				await vsc.env.clipboard.writeText(newText || text);
