@@ -118,7 +118,7 @@ function showHistoryStateMsg() {
 		wbConf = vsc.workspace.getConfiguration(), 
 		maxHistoryLength = wbConf.get(opts.maxHistOptName) || opts.defaultMaxHist,
 		count = history.length;
-	vsc.window.showInformationMessage(`${count.toString()}  of  ${maxHistoryLength}  max possible copied texts.`);
+	vsc.window.showInformationMessage(`${count.toString()}  of  ${maxHistoryLength}  max possible saved text snippets.`);
 	console.log("OK");
 }
 
