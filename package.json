@@ -2,6 +2,8 @@
   "name": "bn-smart-clipboard",
 	"displayName": "Smart clipboard",
 	"description": "Clipboard history and pasting with ident.",
+	"publisher": "Bognaum",
+	"icon": "IMG/icon.jpg",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.58.0"
