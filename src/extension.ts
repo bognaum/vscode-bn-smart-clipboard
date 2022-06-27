@@ -32,8 +32,8 @@ export function activate(context: vsc.ExtensionContext) {
 			const tEditor = vsc.window.activeTextEditor;
 			if (tEditor) {
 				const 
-				text        = await addToHistory(),
-				shiftedText = reindentText(text, tEditor);
+					text        = await addToHistory(),
+					shiftedText = reindentText(text, tEditor);
 				await vsc.env.clipboard.writeText(shiftedText);
 				await vsc.commands.executeCommand("editor.action.clipboardPasteAction");
 			} else {
